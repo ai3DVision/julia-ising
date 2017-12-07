@@ -5,9 +5,9 @@ using HDF5
 using PyPlot
 println("")
 
-typealias Spin Int8
-typealias Conf Array{Spin, 2}
-typealias Confs Array{Spin, 3}
+const Spin = Int8
+const Conf = Array{Spin, 2}
+const Confs = Array{Spin, 3}
 
 global const Tc = 1/(1/2*log(1+sqrt(2)))
 
@@ -32,7 +32,7 @@ type Measurements
 end
 
 
-function main()
+function main(ARGS::Array{String})
     p = Parameters()
     p.L = 20
     T = 1.2 # outside of code always T in units of Tc
@@ -133,7 +133,7 @@ function sweep_Metropolis(p::Parameters, conf::Conf)
             # Metropolis
             dE = 2. * conf[x,y] * sum(conf[p.neigh[x,y,:]])
 
-            if dE <= 0 || rand() < exp(- p.beta*dE)
+            if dE <= 0 || rand(1)[1] < exp(- p.beta*dE)
                 conf[x,y] *= -1
                 spinflips += 1
                 dE_sum += dE
@@ -231,7 +231,7 @@ function plot_confs(confs::Confs, fname::String="", all::Bool=false)
     n = l
     if (l > 50) n = 50 end
 
-    confidcs = floor(Int, linspace(1,l,n))
+    confidcs = floor.(Int, linspace(1,l,n))
 
     n_rows = Int(ceil(n/5))
     n_cols = n<5?n:5
